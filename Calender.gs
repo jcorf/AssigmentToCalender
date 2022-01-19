@@ -1,5 +1,5 @@
 var spreadsheet = SpreadsheetApp.getActiveSheet();
-var calendarId = """" CALENDER ID """ >> Go to Calender >> Settings & Sharing >> Calender ID
+var calendarId = "CALENDER ID  >> Go to Calender >> Settings & Sharing >> Calender ID"
 var eventCal = CalendarApp.getCalendarById(calendarId);
 
 
@@ -116,14 +116,44 @@ function changedTypeAndNotes(row, title, desc, eventID, event) {
   }
 }
 
+/************************************************************************
+ * Source: https://yagisanatode.com/2019/05/11/google-apps-script-get-the-last-row-of-a-data-range-when-other-columns-have-content-like-hidden-formulas-and-check-boxes/
+ * Gets the last row number based on a selected column range values
+ *
+ * @param {array} range : takes a 2d array of a single column's values
+ *
+ * @returns {number} : the last row number with a value. 
+ *
+ */ 
+function getLastRowSpecial(range) {
+  var rowNum = 0
+  var blank = false
+  for (var row = 0; row < range.length; row++) {
+
+    if (range[row][0] === "" && !blank) {
+      rowNum = row
+      blank = true
+
+    } else if (range[row][0] !== "") {
+      blank = false
+    }
+  }
+  return rowNum
+}
 
 
 /**
  * Runs the full Script
+ 
+ Let rows be the total amount of rows that the spreadsheet has [Because of conditional form
+ Let r be the row to start iterating on
  */
 function runScript() {
 
-  rows = 3
+  var columnToCheck = spreadsheet.getRange("A:A").getValues();
+  var lastRow = getLastRowSpecial(columnToCheck);
+
+  rows = lastRow
 
   var firstDay = new Date(2022, 0, 01);
   var lastDay = new Date(2022, 04, 06);
