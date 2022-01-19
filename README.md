@@ -7,13 +7,15 @@ Also provides an option to produce a heatmap of how busy classes are dependent o
 
 Directions: 
 
-Copy of Blank Spreadsheet:
+Copy of Blank Spreadsheet: ...
 
-> Change Conditional Formatting & Data Validation to the associated courses
-> Make sure to have at least 1 assignment at all times or the script cannot delete any of the assignments 
-> Do not delete an event on the calender; delete it within the spreadsheet
+1. Change Conditional Formatting & Data Validation to the associated courses
+2. Make sure to have at least 1 assignment at all times or the script cannot delete any of the assignments 
+3. Do not delete an event on the calender; delete it within the spreadsheet
 
 
-Calender.gs -- run runScript in the Extensions > App Script
-Tasks.gs -- run ...
+Be sure to replace the Task ID and Calender IDs in the code
+
+`Calender.gs` -- execute runScript in the Extensions > App Script
+`Tasks.gs` -- execute ...
 
