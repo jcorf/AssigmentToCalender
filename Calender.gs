@@ -1,14 +1,9 @@
-var spreadsheet = SpreadsheetApp.getActiveSheet();
-var calendarId = "CALENDER ID  >> Go to Calender >> Settings & Sharing >> Calender ID"
-var eventCal = CalendarApp.getCalendarById(calendarId);
-
-
 /**
  * @Returns the starting (due) date for an assignment based on the Due Date and Time Column
  */
 function getStartDate(row) {
-  var date = new Date(spreadsheet.getRange('B' + row).getValue()) //Getting the date
-  var time = new Date(spreadsheet.getRange('D' + row).getValue()) //Getting the time
+  var date = new Date(spreadsheet.getRange(DATE + row).getValue()) //Getting the date
+  var time = new Date(spreadsheet.getRange(TIME + row).getValue()) //Getting the time
 
   date.setHours(time.getHours())
   date.setMinutes(time.getMinutes())
@@ -29,9 +24,9 @@ function addMinutes(date, minutes) {
 function addEvent(title, startdate, enddate, completed, location, type, notes) {
   var event = eventCal.createEvent(title, startdate, enddate)
   if (completed) {
-    event.setColor('10') // Green if completed
+    event.setColor(COMPLETED_COLOR) // White if completed
   } else {
-    event.setColor('11') // Red if not completed
+    event.setColor(INCOMPLETE_COLOR) // Red if not completed
   }
 
   event.setLocation(location)
@@ -54,13 +49,13 @@ function getValue(col, row) {
  */
 function changedColor(row, title, event_color, eventID, event) {
   var event = eventCal.getEventById(eventID)
-  var completed = getValue('G', row)
+  var completed = getValue(COMPLETE, row)
 
-  if (event_color == '11' && completed) {// event_color is RED but assignment is completed 
-    event.setColor('10')
+  if (event_color == INCOMPLETE_COLOR && completed) {// event_color is RED but assignment is completed 
+    event.setColor(COMPLETED_COLOR)
     Logger.log(`UPDATED COLOR: ${title} to Completed [${eventID}]`)
-  } else if (event_color == '10' && !completed) { //event_color is GREEN but assignment is not completed
-    event.setColor('11')
+  } else if (event_color == COMPLETED_COLOR && !completed) { //event_color is GREEN but assignment is not completed
+    event.setColor(INCOMPLETE_COLOR)
     Logger.log(`UPDATED COLOR: ${title} to Incomplete [${eventID}]`)
   }
 }
@@ -81,7 +76,7 @@ function changedDate(row, title, start_time, eventID, event) {
  * Changes the event title if the corresponding cell is changed
  */
 function changedTitle(row, title, eventID, event) {
-  var cell_title = getValue('F', row)
+  var cell_title = getValue(TITLE, row)
 
   if (title !== cell_title) {
     event.setTitle(cell_title)
@@ -94,7 +89,7 @@ function changedTitle(row, title, eventID, event) {
  * Changes the event course if the corresponding cell is changed
  */
 function changedCourse(row, title, course, eventID, event) {
-  var cell_course = getValue('A', row)
+  var cell_course = getValue(COURSE, row)
 
   if (course !== cell_course) {
     event.setLocation(cell_course)
@@ -106,8 +101,8 @@ function changedCourse(row, title, course, eventID, event) {
  * Changes the event notes and description if the corresponding cell is changed
  */
 function changedTypeAndNotes(row, title, desc, eventID, event) {
-  var cell_type = getValue('E', row)
-  var cell_notes = getValue('H', row)
+  var cell_type = getValue(TYPE, row)
+  var cell_notes = getValue(NOTES, row)
   var cell_desc = cell_type + " : " + cell_notes
 
   if (desc != cell_desc) {
@@ -124,7 +119,7 @@ function changedTypeAndNotes(row, title, desc, eventID, event) {
  *
  * @returns {number} : the last row number with a value. 
  *
- */ 
+ */
 function getLastRowSpecial(range) {
   var rowNum = 0
   var blank = false
@@ -142,14 +137,11 @@ function getLastRowSpecial(range) {
 }
 
 
+
 /**
  * Runs the full Script
- 
- Let rows be the total amount of rows that the spreadsheet has [Because of conditional form
- Let r be the row to start iterating on
  */
 function runScript() {
-
   var columnToCheck = spreadsheet.getRange("A:A").getValues();
   var lastRow = getLastRowSpecial(columnToCheck);
 
@@ -162,24 +154,24 @@ function runScript() {
 
   // Iterates through the cell
   for (let r = 3; r < rows + 1; r++) { // Until last column
-    var eventID = getValue('K', r)
+    var eventID = getValue(EVENT_COL, r)
     if (eventID == "" && r !== null && getValue('F', r) != "") { // EventID has changed
 
-      var title = getValue('F', r)
+      var title = getValue(TITLE, r)
       var start_date = getStartDate(r)
       var end_date = addMinutes(start_date, 1)
-      var completed = getValue('G', r)
-      var course = getValue('A', r)
-      var type = getValue('E', r)
-      var notes = getValue('H', r)
+      var completed = getValue(COMPLETE, r)
+      var course = getValue(COURSE, r)
+      var type = getValue(TYPE, r)
+      var notes = getValue(NOTES, r)
 
       var eventID = addEvent(title, start_date, end_date, completed, course, type, notes)
       cell_events.push(eventID)
 
-      spreadsheet.getRange('K' + r).setValue(eventID)
+      spreadsheet.getRange(EVENT_COL + r).setValue(eventID)
     } else {
       // Checks for any updates
-      if (getValue('F', r) != "") {
+      if (getValue(TITLE, r) != "") {
         var event = eventCal.getEventById(eventID)
         var event_title = event.getTitle()
 
@@ -206,3 +198,5 @@ function runScript() {
     } // Cell Length = 0
   }
 }
+
+
